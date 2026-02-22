@@ -26,8 +26,8 @@ export default function SecurityPulse({ data, className = '' }) {
                 <AreaChart data={data} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
                     <defs>
                         <linearGradient id="gradDetected" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#6366f1" stopOpacity={0.25} />
-                            <stop offset="100%" stopColor="#6366f1" stopOpacity={0} />
+                            <stop offset="0%" stopColor="#06b6d4" stopOpacity={0.25} />
+                            <stop offset="100%" stopColor="#06b6d4" stopOpacity={0} />
                         </linearGradient>
                         <linearGradient id="gradBlurred" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="#10b981" stopOpacity={0.25} />
@@ -61,7 +61,7 @@ export default function SecurityPulse({ data, className = '' }) {
                         }}
                         labelStyle={{ fontWeight: 700, marginBottom: 6, fontSize: 12 }}
                     />
-                    <Area type="monotone" dataKey="detected" stroke="#6366f1" strokeWidth={2.5} fill="url(#gradDetected)" name="Detected" dot={false} activeDot={{ r: 5, fill: '#6366f1', stroke: tooltipBg, strokeWidth: 2 }} />
+                    <Area type="monotone" dataKey="detected" stroke="#06b6d4" strokeWidth={2.5} fill="url(#gradDetected)" name="Detected" dot={false} activeDot={{ r: 5, fill: '#06b6d4', stroke: tooltipBg, strokeWidth: 2 }} />
                     <Area type="monotone" dataKey="blurred" stroke="#10b981" strokeWidth={2.5} fill="url(#gradBlurred)" name="Auto-Blurred" dot={false} activeDot={{ r: 5, fill: '#10b981', stroke: tooltipBg, strokeWidth: 2 }} />
                 </AreaChart>
             </ResponsiveContainer>

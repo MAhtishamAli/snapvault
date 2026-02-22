@@ -26,11 +26,11 @@ export const securityTimeSeries = generateSecurityTimeSeries();
 
 /** @type {{ name: string, value: number, color: string }[]} */
 export const privacyCategories = [
-    { name: 'API Keys', value: 42, color: '#6366f1' },
-    { name: 'Passwords', value: 28, color: '#ef4444' },
+    { name: 'API Keys', value: 42, color: '#4f46e5' }, /* Electric Indigo */
+    { name: 'Passwords', value: 28, color: '#06b6d4' }, /* Cyber Teal */
     { name: 'Emails', value: 18, color: '#f59e0b' },
     { name: 'PII Data', value: 8, color: '#10b981' },
-    { name: 'Card Numbers', value: 4, color: '#8b5cf6' },
+    { name: 'Card Numbers', value: 4, color: '#fb7185' },
 ];
 
 /** @type {{ month: string, manual: number, automated: number }[]} */

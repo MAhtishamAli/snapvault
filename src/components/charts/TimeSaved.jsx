@@ -61,7 +61,7 @@ export default function TimeSaved({ data, className = '' }) {
                         formatter={(val) => (val === 'manual' ? 'Manual Edit' : 'SnapVault AI')}
                     />
                     <Bar dataKey="manual" fill={isDark ? '#334155' : '#94a3b8'} radius={[8, 8, 0, 0]} maxBarSize={40} animationBegin={200} animationDuration={800} />
-                    <Bar dataKey="automated" fill="#6366f1" radius={[8, 8, 0, 0]} maxBarSize={40} animationBegin={400} animationDuration={800} />
+                    <Bar dataKey="automated" fill="#4f46e5" radius={[8, 8, 0, 0]} maxBarSize={40} animationBegin={400} animationDuration={800} />
                 </BarChart>
             </ResponsiveContainer>
         </ChartWrapper>

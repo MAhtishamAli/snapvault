@@ -3,10 +3,10 @@ import { Play, ShieldAlert, Clock, Eye, Film } from 'lucide-react';
 import { staggerItem } from '../../animations/variants';
 
 const mockVideos = [
-    { id: 1, title: 'Sprint Planning Call', duration: '24:31', date: '2 hours ago', secrets: 3, gradient: 'from-violet-600/30 to-indigo/20', views: 12, size: '145 MB' },
+    { id: 1, title: 'Sprint Planning Call', duration: '24:31', date: '2 hours ago', secrets: 3, gradient: 'from-violet-600/30 to-primary/20', views: 12, size: '145 MB' },
     { id: 2, title: 'API Key Review Session', duration: '08:15', date: '5 hours ago', secrets: 7, gradient: 'from-rose-600/25 to-orange-500/15', views: 5, size: '52 MB' },
-    { id: 3, title: 'Bug Fix Walkthrough', duration: '12:42', date: 'Yesterday', secrets: 0, gradient: 'from-emerald/25 to-teal-600/15', views: 28, size: '78 MB' },
-    { id: 4, title: 'Database Migration Demo', duration: '35:08', date: 'Yesterday', secrets: 2, gradient: 'from-blue-600/25 to-cyan-500/15', views: 8, size: '210 MB' },
+    { id: 3, title: 'Bug Fix Walkthrough', duration: '12:42', date: 'Yesterday', secrets: 0, gradient: 'from-emerald/25 to-teal/15', views: 28, size: '78 MB' },
+    { id: 4, title: 'Database Migration Demo', duration: '35:08', date: 'Yesterday', secrets: 2, gradient: 'from-blue-600/25 to-teal/20', views: 8, size: '210 MB' },
     { id: 5, title: 'Deployment Pipeline', duration: '18:55', date: '2 days ago', secrets: 5, gradient: 'from-amber-500/25 to-yellow-500/15', views: 34, size: '115 MB' },
     { id: 6, title: 'Client Onboarding', duration: '41:20', date: '3 days ago', secrets: 1, gradient: 'from-pink-600/25 to-rose-500/15', views: 15, size: '248 MB' },
 ];
@@ -50,7 +50,7 @@ function VideoCard({ video, onClick, index }) {
 
             {/* Info */}
             <div className="p-4">
-                <h3 className="text-sm font-semibold text-text-primary group-hover:text-indigo transition-colors line-clamp-1">
+                <h3 className="text-sm font-semibold text-text-primary group-hover:text-primary transition-colors line-clamp-1">
                     {video.title}
                 </h3>
                 <div className="flex items-center gap-3 mt-2 text-[11px] text-text-faint">
@@ -68,12 +68,12 @@ export default function VideoGrid({ onPlayVideo }) {
         <div>
             <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-indigo-glow">
-                        <Film className="w-4 h-4 text-indigo" strokeWidth={1.8} />
+                    <div className="p-2 rounded-xl bg-primary-glow">
+                        <Film className="w-4 h-4 text-primary" strokeWidth={1.8} />
                     </div>
                     <h2 className="text-sm font-semibold text-text-primary">Recent Recordings</h2>
                 </div>
-                <button className="text-xs text-indigo hover:text-indigo-hover font-semibold transition-colors cursor-pointer">
+                <button className="text-xs text-primary hover:text-primary-hover font-semibold transition-colors cursor-pointer">
                     View All →
                 </button>
             </div>

@@ -3,8 +3,9 @@ import GlassCard from '../glass/GlassCard';
 
 export default function StatsCard({ icon: Icon, title, value, subtitle, accentColor = 'indigo', trend, index = 0 }) {
     const colorMap = {
-        indigo: { bg: 'bg-indigo-glow', text: 'text-indigo', accent: '#6366f1' },
-        crimson: { bg: 'bg-crimson-glow', text: 'text-crimson', accent: '#ef4444' },
+        indigo: { bg: 'bg-primary-glow', text: 'text-primary', accent: '#4f46e5' },
+        teal: { bg: 'bg-teal-glow', text: 'text-teal', accent: '#06b6d4' },
+        crimson: { bg: 'bg-crimson-glow', text: 'text-crimson', accent: '#fb7185' },
         emerald: { bg: 'bg-emerald-glow', text: 'text-emerald', accent: '#10b981' },
     };
     const c = colorMap[accentColor] || colorMap.indigo;

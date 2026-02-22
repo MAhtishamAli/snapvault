@@ -4,6 +4,7 @@ import { ThemeProvider } from './components/layout/ThemeProvider';
 import Sidebar from './components/layout/Sidebar';
 import Navbar from './components/layout/Navbar';
 import StatsCard from './components/dashboard/StatsCard';
+import ChecklistCard from './components/dashboard/ChecklistCard';
 import VideoGrid from './components/dashboard/VideoGrid';
 import SecurityPulse from './components/charts/SecurityPulse';
 import PrivacyMix from './components/charts/PrivacyMix';
@@ -29,6 +30,12 @@ function AppContent() {
   const [activeVideo, setActiveVideo] = useState(null);
   const [toasts, setToasts] = useState([]);
   const [mousePos, setMousePos] = useState({ x: -300, y: -300 });
+
+  // Checklist states
+  const [snapDone, setSnapDone] = useState(false);
+  const [recordDone, setRecordDone] = useState(false);
+  const [shieldDone, setShieldDone] = useState(false);
+
   const recorder = useRecorder();
   const dashboard = useDashboardData();
   const tour = useTour();
@@ -49,11 +56,13 @@ function AppContent() {
   }, []);
 
   const handleSnap = () => {
+    setSnapDone(true);
     recorder.takeSnap();
     addToast('Screenshot captured!', 'info');
   };
 
   const handleToggleRecording = () => {
+    setRecordDone(true);
     if (!recorder.isRecording) {
       recorder.startRecording();
       addToast('Recording started', 'info');
@@ -61,6 +70,11 @@ function AppContent() {
       recorder.stopRecording();
       addToast('Recording saved', 'success');
     }
+  };
+
+  const handleToggleShield = () => {
+    setShieldDone(true);
+    recorder.toggleBlur();
   };
 
   const renderPage = () => {
@@ -88,12 +102,21 @@ function AppContent() {
                 onClick={tour.start}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo text-white shadow-lg shadow-indigo/25 hover:shadow-indigo/40 cursor-pointer transition-shadow flex-shrink-0"
+                className="hidden sm:flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary text-white shadow-lg shadow-primary/25 hover:shadow-primary/40 cursor-pointer transition-shadow flex-shrink-0"
               >
                 <Compass className="w-4 h-4" strokeWidth={1.8} />
                 Start Tour
               </motion.button>
             </div>
+
+            <ChecklistCard
+              onSnap={handleSnap}
+              onRecord={handleToggleRecording}
+              onShield={handleToggleShield}
+              snapDone={snapDone}
+              recordDone={recordDone}
+              shieldDone={shieldDone}
+            />
 
             {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 fluid-gap fluid-section">
@@ -102,7 +125,7 @@ function AppContent() {
                 title="Recent Snaps"
                 value={recorder.snapCount > 0 ? recorder.snapCount : 24}
                 subtitle="Last snap: 2 minutes ago"
-                accentColor="indigo"
+                accentColor="teal"
                 trend="+3 today"
                 index={0}
               />
@@ -165,7 +188,7 @@ function AppContent() {
           isMuted={recorder.isMuted}
           onToggleMute={recorder.toggleMute}
           isBlurActive={recorder.isBlurActive}
-          onToggleBlur={recorder.toggleBlur}
+          onToggleBlur={handleToggleShield}
           formattedTime={recorder.formattedTime}
         />
 

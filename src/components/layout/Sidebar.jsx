@@ -23,7 +23,7 @@ export default function Sidebar({ collapsed, onToggle, activePage, onNavigate })
             <div className="flex items-center gap-3 px-4 mb-6 min-h-[40px]">
                 <motion.div
                     whileHover={{ rotate: 12 }}
-                    className="w-8 h-8 rounded-xl bg-indigo flex items-center justify-center shadow-md shadow-indigo/25 flex-shrink-0"
+                    className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-md shadow-primary/25 flex-shrink-0"
                 >
                     <Layers className="w-4 h-4 text-white" strokeWidth={2.5} />
                 </motion.div>
@@ -56,7 +56,7 @@ export default function Sidebar({ collapsed, onToggle, activePage, onNavigate })
                                 onMouseLeave={() => setHoveredItem(null)}
                                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all relative cursor-pointer
                                     ${isActive
-                                        ? 'text-indigo bg-indigo-glow'
+                                        ? 'text-primary bg-primary-glow'
                                         : 'text-text-muted hover:text-text-primary hover:bg-[var(--sv-hover-overlay)]'
                                     }`}
                                 aria-current={isActive ? 'page' : undefined}

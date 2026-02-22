@@ -122,9 +122,9 @@ export default function TourOverlay({ isActive, currentStep, stepIndex, totalSte
                                 initial={{ scale: 0 }}
                                 animate={{ scale: 1 }}
                                 transition={{ type: 'spring', delay: 0.1 }}
-                                className="w-14 h-14 rounded-2xl bg-indigo-glow flex items-center justify-center mb-5"
+                                className="w-14 h-14 rounded-2xl bg-primary-glow flex items-center justify-center mb-5"
                             >
-                                <Sparkles className="w-7 h-7 text-indigo" />
+                                <Sparkles className="w-7 h-7 text-primary" />
                             </motion.div>
                         )}
 
@@ -144,10 +144,10 @@ export default function TourOverlay({ isActive, currentStep, stepIndex, totalSte
                                     <div
                                         key={i}
                                         className={`rounded-full transition-all duration-200 ${i === stepIndex
-                                                ? 'w-6 h-2 bg-indigo'
-                                                : i < stepIndex
-                                                    ? 'w-2 h-2 bg-indigo/40'
-                                                    : 'w-2 h-2 bg-surface-overlay'
+                                            ? 'w-6 h-2 bg-primary'
+                                            : i < stepIndex
+                                                ? 'w-2 h-2 bg-primary/40'
+                                                : 'w-2 h-2 bg-surface-overlay'
                                             }`}
                                     />
                                 ))}
@@ -165,7 +165,7 @@ export default function TourOverlay({ isActive, currentStep, stepIndex, totalSte
                                 )}
                                 <button
                                     onClick={next}
-                                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold bg-indigo text-white hover:bg-indigo-hover transition-all cursor-pointer shadow-md shadow-indigo/25"
+                                    className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold bg-primary text-white hover:bg-primary-hover transition-all cursor-pointer shadow-md shadow-primary/25"
                                 >
                                     {isLast ? 'Get Started' : isFirst ? 'Start Tour' : 'Next'}
                                     {!isLast && <ChevronRight className="w-3.5 h-3.5" />}
