@@ -1,6 +1,9 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ThemeProvider } from './components/layout/ThemeProvider';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import AuthModal from './components/ui/AuthModal';
 import Sidebar from './components/layout/Sidebar';
 import Navbar from './components/layout/Navbar';
 import StatsCard from './components/dashboard/StatsCard';
@@ -16,6 +19,7 @@ import SettingsPage from './components/pages/SettingsPage';
 import VideoPlayerModal from './components/ui/VideoPlayerModal';
 import NotificationPanel from './components/ui/NotificationPanel';
 import TourOverlay from './components/ui/TourOverlay';
+import ProcessRecordingModal from './components/ui/ProcessRecordingModal';
 import { ToastContainer } from './components/ui/Toast';
 import { useRecorder } from './hooks/useRecorder';
 import { useDashboardData } from './hooks/useDashboardData';
@@ -39,6 +43,7 @@ function AppContent() {
   const recorder = useRecorder();
   const dashboard = useDashboardData();
   const tour = useTour();
+  const { user, requireAuthAction, isLoading } = useAuth();
 
   // Mouse spotlight tracking
   useEffect(() => {
@@ -56,20 +61,37 @@ function AppContent() {
   }, []);
 
   const handleSnap = () => {
-    setSnapDone(true);
-    recorder.takeSnap();
-    addToast('Screenshot captured!', 'info');
+    requireAuthAction(async () => {
+      setSnapDone(true);
+      const blob = await recorder.takeSnap();
+      if (blob) {
+        try {
+          const formData = new FormData();
+          formData.append('snap', blob, `snap_${Date.now()}.png`);
+          await axios.post(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/snaps/upload`, formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          });
+          addToast('Screenshot secured & saved to vault!', 'success');
+          dashboard.refresh?.();
+        } catch (err) {
+          console.error(err);
+          addToast('Failed to save snap', 'error');
+        }
+      }
+    });
   };
 
   const handleToggleRecording = () => {
-    setRecordDone(true);
-    if (!recorder.isRecording) {
-      recorder.startRecording();
-      addToast('Recording started', 'info');
-    } else {
-      recorder.stopRecording();
-      addToast('Recording saved', 'success');
-    }
+    requireAuthAction(() => {
+      setRecordDone(true);
+      if (!recorder.isRecording) {
+        recorder.startRecording();
+        addToast('Recording started', 'info');
+      } else {
+        recorder.stopRecording();
+        addToast('Recording saved', 'success');
+      }
+    });
   };
 
   const handleToggleShield = () => {
@@ -92,7 +114,7 @@ function AppContent() {
             <div className="flex items-start sm:items-center justify-between fluid-section">
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight">
-                  Welcome back 👋
+                  Welcome back, {user ? user.name : 'Guest'} 👋
                 </h1>
                 <p className="text-sm text-text-muted mt-2 max-w-lg leading-relaxed">
                   Your privacy dashboard is running. All {dashboard.totals.totalBlurred} detected secrets have been auto-redacted.
@@ -214,8 +236,23 @@ function AppContent() {
         {activeVideo && <VideoPlayerModal video={activeVideo} onClose={() => setActiveVideo(null)} />}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {recorder.recordedBlob && (
+          <ProcessRecordingModal
+            blob={recorder.recordedBlob}
+            onClose={recorder.clearRecordedBlob}
+            onComplete={(result) => {
+              // Show toast and save the result somewhere if needed
+              addToast(`Recording secure! AI found ${result.detections} areas.`, 'success');
+              recorder.clearRecordedBlob();
+            }}
+          />
+        )}
+      </AnimatePresence>
+
       <ToastContainer toasts={toasts} onDismiss={removeToast} />
       <TourOverlay {...tour} />
+      <AuthModal />
     </div>
   );
 }
@@ -223,7 +260,9 @@ function AppContent() {
 function App() {
   return (
     <ThemeProvider>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </ThemeProvider>
   );
 }

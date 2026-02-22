@@ -2,14 +2,7 @@ import { motion } from 'framer-motion';
 import { Play, ShieldAlert, Clock, Eye, Film } from 'lucide-react';
 import { staggerItem } from '../../animations/variants';
 
-const mockVideos = [
-    { id: 1, title: 'Sprint Planning Call', duration: '24:31', date: '2 hours ago', secrets: 3, gradient: 'from-violet-600/30 to-primary/20', views: 12, size: '145 MB' },
-    { id: 2, title: 'API Key Review Session', duration: '08:15', date: '5 hours ago', secrets: 7, gradient: 'from-rose-600/25 to-orange-500/15', views: 5, size: '52 MB' },
-    { id: 3, title: 'Bug Fix Walkthrough', duration: '12:42', date: 'Yesterday', secrets: 0, gradient: 'from-emerald/25 to-teal/15', views: 28, size: '78 MB' },
-    { id: 4, title: 'Database Migration Demo', duration: '35:08', date: 'Yesterday', secrets: 2, gradient: 'from-blue-600/25 to-teal/20', views: 8, size: '210 MB' },
-    { id: 5, title: 'Deployment Pipeline', duration: '18:55', date: '2 days ago', secrets: 5, gradient: 'from-amber-500/25 to-yellow-500/15', views: 34, size: '115 MB' },
-    { id: 6, title: 'Client Onboarding', duration: '41:20', date: '3 days ago', secrets: 1, gradient: 'from-pink-600/25 to-rose-500/15', views: 15, size: '248 MB' },
-];
+import { useDashboardData } from '../../hooks/useDashboardData';
 
 function VideoCard({ video, onClick, index }) {
     return (
@@ -54,9 +47,9 @@ function VideoCard({ video, onClick, index }) {
                     {video.title}
                 </h3>
                 <div className="flex items-center gap-3 mt-2 text-[11px] text-text-faint">
-                    <span>{video.date}</span>
-                    <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{video.views}</span>
-                    <span>{video.size}</span>
+                    <span>{new Date(video.created_at).toLocaleDateString()}</span>
+                    <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{video.views || 0}</span>
+                    <span>{video.size || 'N/A'}</span>
                 </div>
             </div>
         </motion.div>
@@ -64,6 +57,27 @@ function VideoCard({ video, onClick, index }) {
 }
 
 export default function VideoGrid({ onPlayVideo }) {
+    const { recordings } = useDashboardData();
+
+    // Map DB format to UI format
+    const displayVideos = recordings.slice(0, 6).map((rec, i) => {
+        const gradients = [
+            'from-violet-600/30 to-primary/20',
+            'from-rose-600/25 to-orange-500/15',
+            'from-emerald/25 to-teal/15',
+            'from-blue-600/25 to-teal/20',
+            'from-amber-500/25 to-yellow-500/15',
+            'from-pink-600/25 to-rose-500/15'
+        ];
+        return {
+            ...rec,
+            title: rec.original_name,
+            duration: rec.duration ? `${Math.floor(rec.duration / 60)}:${(rec.duration % 60).toString().padStart(2, '0')}` : '00:00',
+            secrets: rec.detections,
+            gradient: gradients[i % gradients.length]
+        };
+    });
+
     return (
         <div>
             <div className="flex items-center justify-between mb-4">
@@ -77,11 +91,18 @@ export default function VideoGrid({ onPlayVideo }) {
                     View All →
                 </button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 fluid-gap">
-                {mockVideos.map((video, i) => (
-                    <VideoCard key={video.id} video={video} onClick={onPlayVideo} index={i} />
-                ))}
-            </div>
+
+            {displayVideos.length === 0 ? (
+                <div className="text-center p-8 bg-surface-raised rounded-xl text-text-muted text-sm border border-border">
+                    No recordings yet. Connect and take a snap or start recording!
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 fluid-gap">
+                    {displayVideos.map((video, i) => (
+                        <VideoCard key={video.id} video={video} onClick={onPlayVideo} index={i} />
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

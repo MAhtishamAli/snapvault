@@ -8,31 +8,45 @@ import Button from '../ui/Button';
 import EmptyState from '../ui/EmptyState';
 import { pageTransition } from '../../animations/variants';
 
-const allRecordings = [
-    { id: 1, title: 'Sprint Planning Call', duration: '24:31', date: 'Feb 19, 2026', time: '2 hours ago', secrets: 3, gradient: 'from-indigo/20 to-purple-600/20', views: 12, size: '145 MB' },
-    { id: 2, title: 'API Key Review Session', duration: '08:15', date: 'Feb 19, 2026', time: '5 hours ago', secrets: 7, gradient: 'from-crimson/20 to-orange-500/20', views: 5, size: '52 MB' },
-    { id: 3, title: 'Bug Fix Walkthrough', duration: '12:42', date: 'Feb 18, 2026', time: 'Yesterday', secrets: 0, gradient: 'from-emerald/20 to-teal-600/20', views: 28, size: '78 MB' },
-    { id: 4, title: 'Database Migration Demo', duration: '35:08', date: 'Feb 18, 2026', time: 'Yesterday', secrets: 2, gradient: 'from-blue-500/20 to-indigo/20', views: 8, size: '210 MB' },
-    { id: 5, title: 'Deployment Pipeline', duration: '18:55', date: 'Feb 17, 2026', time: '2 days ago', secrets: 5, gradient: 'from-amber/20 to-yellow-600/20', views: 34, size: '115 MB' },
-    { id: 6, title: 'Client Onboarding', duration: '41:20', date: 'Feb 16, 2026', time: '3 days ago', secrets: 1, gradient: 'from-pink-500/20 to-rose-500/20', views: 15, size: '248 MB' },
-    { id: 7, title: 'Security Audit Review', duration: '55:12', date: 'Feb 15, 2026', time: '4 days ago', secrets: 12, gradient: 'from-red-500/20 to-pink-600/20', views: 42, size: '330 MB' },
-    { id: 8, title: 'Team Standup Feb 15', duration: '15:03', date: 'Feb 15, 2026', time: '4 days ago', secrets: 0, gradient: 'from-teal-500/20 to-cyan-600/20', views: 6, size: '90 MB' },
-];
+import { useDashboardData } from '../../hooks/useDashboardData';
 
 export default function RecordingsPage({ onPlayVideo }) {
+    const { recordings: dbRecordings } = useDashboardData();
     const [viewMode, setViewMode] = useState('grid');
     const [searchQuery, setSearchQuery] = useState('');
-    const [recordings, setRecordings] = useState(allRecordings);
     const [selectedIds, setSelectedIds] = useState(new Set());
 
-    const filtered = recordings.filter(r => r.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    const displayVideos = dbRecordings.map((rec, i) => {
+        const gradients = [
+            'from-violet-600/30 to-primary/20',
+            'from-rose-600/25 to-orange-500/15',
+            'from-emerald/25 to-teal/15',
+            'from-blue-600/25 to-teal/20',
+            'from-amber-500/25 to-yellow-500/15',
+            'from-pink-600/25 to-rose-500/15'
+        ];
+        return {
+            ...rec,
+            title: rec.original_name,
+            duration: rec.duration ? `${Math.floor(rec.duration / 60)}:${(rec.duration % 60).toString().padStart(2, '0')}` : '00:00',
+            secrets: rec.detections,
+            gradient: gradients[i % gradients.length],
+            time: new Date(rec.created_at).toLocaleDateString(),
+            date: new Date(rec.created_at).toLocaleDateString(),
+            views: 0,
+            size: rec.size || 'N/A'
+        };
+    });
+
+    const filtered = displayVideos.filter(r => r.title.toLowerCase().includes(searchQuery.toLowerCase()));
 
     const toggleSelect = (id) => {
         setSelectedIds(prev => { const s = new Set(prev); s.has(id) ? s.delete(id) : s.add(id); return s; });
     };
 
     const deleteSelected = () => {
-        setRecordings(prev => prev.filter(r => !selectedIds.has(r.id)));
+        // Mock UI deletion for now
+        // TODO: call backend to delete
         setSelectedIds(new Set());
     };
 
@@ -47,7 +61,7 @@ export default function RecordingsPage({ onPlayVideo }) {
                     <div className="p-2.5 rounded-xl bg-indigo-glow"><Video className="w-5 h-5 text-indigo" /></div>
                     Library
                 </h1>
-                <p className="text-sm text-text-faint mt-2">{recordings.length} recordings · 1.27 GB</p>
+                <p className="text-sm text-text-faint mt-2">{displayVideos.length} recordings</p>
             </div>
 
             {/* Toolbar */}

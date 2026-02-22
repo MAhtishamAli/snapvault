@@ -74,7 +74,7 @@ export function useTour() {
         } else {
             setIsActive(false);
             setIsCompleted(true);
-            try { localStorage.setItem(TOUR_STORAGE_KEY, 'true'); } catch { }
+            try { localStorage.setItem(TOUR_STORAGE_KEY, 'true'); } catch (e) { console.warn(e); }
         }
     }, [stepIndex, totalSteps]);
 
@@ -85,7 +85,7 @@ export function useTour() {
     const skip = useCallback(() => {
         setIsActive(false);
         setIsCompleted(true);
-        try { localStorage.setItem(TOUR_STORAGE_KEY, 'true'); } catch { }
+        try { localStorage.setItem(TOUR_STORAGE_KEY, 'true'); } catch (e) { console.warn(e); }
     }, []);
 
     const start = useCallback(() => {

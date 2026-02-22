@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Camera, Square, Circle, Shield, Mic, MicOff, Search, Bell } from 'lucide-react';
+import { Camera, Square, Circle, Shield, Mic, MicOff, Search, Bell, User, LogOut } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 import { springTap } from '../../animations/variants';
 
 export default function Navbar({
@@ -7,6 +8,7 @@ export default function Navbar({
     isRecording, isMuted, onToggleMute,
     isBlurActive, onToggleBlur, formattedTime
 }) {
+    const { user, logout, setShowAuthModal, setAuthModalView } = useAuth();
     return (
         <header className="flex flex-col relative z-20">
             {/* Floating Zen Control Bar with explicit text & animations for visibility check */}
@@ -111,15 +113,43 @@ export default function Navbar({
                     />
                 </div>
 
-                <motion.button
-                    whileTap={springTap.whileTap}
-                    onClick={onToggleNotifications}
-                    className="relative p-2.5 rounded-xl text-text-muted hover:text-text-primary hover:bg-[var(--sv-hover-overlay)] transition-all cursor-pointer"
-                    title="Notifications"
-                >
-                    <Bell className="w-5 h-5" strokeWidth={1.5} />
-                    <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-crimson rounded-full" />
-                </motion.button>
+                <div className="flex items-center gap-4">
+                    <motion.button
+                        whileTap={springTap.whileTap}
+                        onClick={onToggleNotifications}
+                        className="relative p-2.5 rounded-xl text-text-muted hover:text-text-primary hover:bg-[var(--sv-hover-overlay)] transition-all cursor-pointer"
+                        title="Notifications"
+                    >
+                        <Bell className="w-5 h-5" strokeWidth={1.5} />
+                        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-crimson rounded-full" />
+                    </motion.button>
+
+                    {user ? (
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary font-bold shadow-primary-glow">
+                                {user.name.charAt(0).toUpperCase()}
+                            </div>
+                            <button
+                                onClick={logout}
+                                className="text-text-muted hover:text-crimson p-2 transition-colors cursor-pointer"
+                                title="Logout"
+                            >
+                                <LogOut className="w-5 h-5" />
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                setAuthModalView('login');
+                                setShowAuthModal(true);
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-surface border border-border text-sm font-semibold hover:bg-surface-raised cursor-pointer transition-colors"
+                        >
+                            <User className="w-4 h-4" />
+                            Sign In
+                        </button>
+                    )}
+                </div>
             </div>
         </header>
     );

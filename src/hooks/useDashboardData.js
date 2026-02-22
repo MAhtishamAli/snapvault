@@ -1,38 +1,57 @@
-import { useMemo } from 'react';
-import { securityTimeSeries, privacyCategories, timeSavedData, recordingHistory } from '../data/mockData';
+import { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
+import { useAuth } from '../contexts/AuthContext';
+import { securityTimeSeries, timeSavedData } from '../data/mockData';
 
-/**
- * Custom hook that processes dashboard data.
- * Swap mock imports for API calls when connecting a backend.
- *
- * @returns {{ securityData, privacyMix, timeSaved, recordings, totals }}
- */
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
 export function useDashboardData() {
+    const { token, user } = useAuth();
+    const [stats, setStats] = useState(null);
+    const [recordings, setRecordings] = useState([]);
+
+    const loadData = async () => {
+        if (!token) return;
+        try {
+            const [dashRes, recRes] = await Promise.all([
+                axios.get(`${API_URL}/dashboard`),
+                axios.get(`${API_URL}/recordings`),
+            ]);
+            setStats(dashRes.data.stats);
+            setRecordings(recRes.data.recordings);
+        } catch (err) {
+            console.error('Failed to load dashboard data', err);
+        }
+    };
+
+    useEffect(() => {
+        if (user) {
+            loadData();
+        } else {
+            setStats(null);
+            setRecordings([]);
+        }
+    }, [user, token]);
+
     const totals = useMemo(() => {
-        const totalDetected = securityTimeSeries.reduce((sum, d) => sum + d.detected, 0);
-        const totalBlurred = securityTimeSeries.reduce((sum, d) => sum + d.blurred, 0);
-        const blurRate = totalDetected > 0 ? Math.round((totalBlurred / totalDetected) * 100) : 0;
-
-        const totalManualMinutes = timeSavedData.reduce((sum, d) => sum + d.manual, 0);
-        const totalAutoMinutes = timeSavedData.reduce((sum, d) => sum + d.automated, 0);
-        const minutesSaved = totalManualMinutes - totalAutoMinutes;
-        const hoursSaved = Math.round(minutesSaved / 60 * 10) / 10;
-
+        if (!stats) return { totalDetected: 0, totalBlurred: 0, blurRate: 0, minutesSaved: 0, hoursSaved: 0, totalRecordings: 0 };
         return {
-            totalDetected,
-            totalBlurred,
-            blurRate,
-            minutesSaved,
-            hoursSaved,
-            totalRecordings: recordingHistory.length,
+            totalDetected: stats.detections,
+            totalBlurred: stats.blurred,
+            blurRate: stats.detections > 0 ? Math.round((stats.blurred / stats.detections) * 100) : 0,
+            minutesSaved: stats.detections * 5, // mock 5 min per detection
+            hoursSaved: Math.round((stats.detections * 5) / 60 * 10) / 10,
+            totalRecordings: stats.recordings || recordings.length,
+            snaps: stats.snaps
         };
-    }, []);
+    }, [stats, recordings]);
 
     return {
-        securityData: securityTimeSeries,
-        privacyMix: privacyCategories,
-        timeSaved: timeSavedData,
-        recordings: recordingHistory,
+        securityData: securityTimeSeries, // mock chart 
+        privacyMix: stats?.privacyMix || [], // real
+        timeSaved: timeSavedData, // mock chart
+        recordings, // real
         totals,
+        refresh: loadData
     };
 }
